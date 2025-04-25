@@ -21,4 +21,4 @@ Why is it so hard to put working code into docs? A few common options are:
 Pluck seeks to provide many of the benefits of extracting by line, but extract
 code by "tag".  And since we are talking about code, we can use functions as
 our "tags".  In addition, we provide some functionality for specifying how that
-function is rendered.  And that is it, "do one thing well".
+function is rendered.
