@@ -13,6 +13,7 @@ type Function struct {
 type Type struct {
 	Name       string
 	Definition string
+	DocString  string
 }
 
 type DB struct {
