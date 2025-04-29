@@ -16,7 +16,7 @@ func write(w io.Writer, hunks ...string) error {
 	return nil
 }
 
-func RenderBlankLine() RenderFunc {
+func RenderLineBreak() RenderFunc {
 	return func(w io.Writer, _ *DB) error {
 		_, err := w.Write([]byte("\n"))
 		return err
@@ -30,7 +30,7 @@ func RenderFunction(name string) RenderFunc {
 			return fmt.Errorf("querying db for function '%s': %w", name, err)
 		}
 
-		err = write(w, f.DocString, "\n", f.Definition, "\n")
+		err = write(w, f.DocString, "\n", f.Definition)
 		if err != nil {
 			return fmt.Errorf("writing function '%s': %w", name, err)
 		}
@@ -46,7 +46,7 @@ func RenderType(name string) RenderFunc {
 			return fmt.Errorf("querying db for type '%s': %w", name, err)
 		}
 
-		err = write(w, t.DocString, "\n", t.Definition, "\n")
+		err = write(w, t.DocString, "\n", t.Definition)
 		if err != nil {
 			return fmt.Errorf("writing type '%s': %w", name, err)
 		}

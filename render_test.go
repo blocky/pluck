@@ -10,11 +10,11 @@ import (
 	"go.bky.sh/pluck"
 )
 
-func TestRenderBlankLine(t *testing.T) {
+func TestRenderLineBreak(t *testing.T) {
 	t.Run("happy path", func(t *testing.T) {
 		// given
 		buf := &bytes.Buffer{}
-		f := pluck.RenderBlankLine()
+		f := pluck.RenderLineBreak()
 
 		// when
 		err := f(buf, nil)
