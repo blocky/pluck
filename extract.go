@@ -157,10 +157,55 @@ func extractFunc(src []byte) ([]*Function, error) {
 	return functions, nil
 }
 
+func extractMethods(src []byte) ([]*Function, error) {
+	pattern := []byte(`
+		(method_declaration
+			receiver: (_)
+			name: (field_identifier) @fnName
+			parameters: (_)
+			result: (_)
+			body: (_)
+		) @fnDefinition
+	`)
+
+	cursor, query, err := initQuery(src, pattern)
+	if err != nil {
+		return nil, fmt.Errorf("initializing query: %w", err)
+	}
+
+	var functions []*Function
+	for {
+		match, ok := cursor.NextMatch()
+		if !ok {
+			break
+		}
+
+		fnDefNode := findNodeByName(query, match, "fnDefinition")
+		interpreter := matchInterpreter{query: query, match: match, src: src}
+		f := &Function{
+			Name:       interpreter.getContentAndWitholdError("fnName"),
+			Definition: interpreter.getContentAndWitholdError("fnDefinition"),
+			DocString:  collectComments(fnDefNode, src),
+		}
+		if err := interpreter.ErrorIfAny(); err != nil {
+			return nil, fmt.Errorf("interpreting query: %w", err)
+		}
+
+		functions = append(functions, f)
+	}
+
+	return functions, nil
+}
+
 func Extract(src []byte) (*DB, error) {
 	funcs, err := extractFunc(src)
 	if err != nil {
 		return nil, fmt.Errorf("extracting funcs: %w", err)
+	}
+
+	methods, err := extractMethods(src)
+	if err != nil {
+		return nil, fmt.Errorf("extracting methods: %w", err)
 	}
 
 	types, err := extractType(src)
@@ -169,7 +214,7 @@ func Extract(src []byte) (*DB, error) {
 	}
 
 	return &DB{
-		Functions: funcs,
+		Functions: append(funcs, methods...),
 		Types:     types,
 	}, nil
 }

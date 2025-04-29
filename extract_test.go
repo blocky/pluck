@@ -20,6 +20,12 @@ type aType struct {
 	A int
 }
 
+// line x
+func (x *aType) aMethod() (int, error) {
+	return 0, nil
+
+}
+
 type anotherType struct{ oneLine int }
 
 
@@ -55,11 +61,12 @@ func TestExtract(t *testing.T) {
 		require.NoError(t, err)
 
 		// then
-		assert.Len(t, got.Functions, 3)
+		assert.Len(t, got.Functions, 4)
 		assert.Equal(t, "notMain", got.Functions[0].Name)
 		assert.Equal(t, "// line 1\n// line 2", got.Functions[0].DocString)
 		assert.Equal(t, "oneLine", got.Functions[1].Name)
 		assert.Equal(t, "main", got.Functions[2].Name)
+		assert.Equal(t, "aMethod", got.Functions[3].Name)
 
 		assert.Len(t, got.Types, 2)
 		assert.Equal(t, "aType", got.Types[0].Name)
