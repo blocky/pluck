@@ -1,0 +1,7 @@
+type Type struct {
+	BarField int
+}
+
+func main() {
+	fmt.Println("Hello, world!")
+}

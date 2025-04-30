@@ -1,0 +1,5 @@
+type TypeWithMethods struct{}
+
+func (m *TypeWithMethods) AMethod() {
+	fmt.Println("FooMethod")
+}

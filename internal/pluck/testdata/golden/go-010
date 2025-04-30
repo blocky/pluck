@@ -1,0 +1,21 @@
+func main() {
+	fmt.Println("Hello, world!")
+}
+
+// a docstring
+func FuncWithDocstring() (int, error) {
+	return 0, nil
+}
+
+func (m *TypeWithMethods) AMethod() {
+	fmt.Println("FooMethod")
+}
+
+type Type struct {
+	BarField int
+}
+
+// type with docstring
+type TypeWithDocstring struct {
+	FooField string
+}

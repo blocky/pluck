@@ -1,0 +1,3 @@
+func Func() {
+	fmt.Println("AFunc")
+}
