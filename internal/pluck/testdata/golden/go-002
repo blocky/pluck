@@ -1,0 +1,4 @@
+// type with docstring
+type TypeWithDocstring struct {
+	FooField string
+}
