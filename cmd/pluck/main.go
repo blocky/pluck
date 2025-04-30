@@ -4,34 +4,11 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
 
 	"github.com/spf13/cobra"
 
 	"go.bky.sh/pluck"
 )
-
-func parsePick(s string) (pluck.RenderFunc, error) {
-	parts := strings.SplitN(s, ":", 2)
-	if len(parts) != 2 {
-		return nil, fmt.Errorf("invalid format %q: expected 'kind:name'", s)
-	}
-
-	name := parts[1]
-	if name == "" {
-		return nil, fmt.Errorf("empty name in pick %q", s)
-	}
-
-	kind := strings.ToLower(parts[0])
-	switch kind {
-	case "function":
-		return pluck.RenderFunction(name), nil
-	case "type":
-		return pluck.RenderType(name), nil
-	default:
-		return nil, fmt.Errorf("invalid kind %q: must be 'function' or 'type'", kind)
-	}
-}
 
 func getSrc(inputFile string) ([]byte, error) {
 	if inputFile != "" {
@@ -62,35 +39,15 @@ func runPluck(inputFile string, picks []string, outputFile string) error {
 		return fmt.Errorf("reading source: %w", err)
 	}
 
-	// Parse picks
-	var renderFuncs []pluck.RenderFunc
-	for i, p := range picks {
-		f, err := parsePick(p)
-		if err != nil {
-			return fmt.Errorf("parsing picks: %w", err)
-		}
-
-		if i != 0 {
-			renderFuncs = append(renderFuncs, pluck.RenderLineBreak())
-		}
-		renderFuncs = append(renderFuncs, f, pluck.RenderLineBreak())
-	}
-
-	// Output
 	writer, closeWriter, err := getWriter(outputFile)
 	if err != nil {
 		return fmt.Errorf("setting up output: %w", err)
 	}
 	defer closeWriter()
 
-	db, err := pluck.Extract(source)
+	err = pluck.GenerateFromPickCmds(writer, source, picks)
 	if err != nil {
-		return fmt.Errorf("analyzing source code: %w", err)
-	}
-
-	err = pluck.Render(writer, db, renderFuncs...)
-	if err != nil {
-		return fmt.Errorf("rendering: %w", err)
+		return fmt.Errorf("generating output: %w", err)
 	}
 
 	return nil
