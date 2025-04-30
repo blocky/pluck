@@ -7,7 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"go.bky.sh/pluck"
+	"go.bky.sh/pluck/internal/pluck"
 )
 
 func getSrc(inputFile string) ([]byte, error) {
