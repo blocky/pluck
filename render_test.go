@@ -29,10 +29,11 @@ func TestRenderFunction(t *testing.T) {
 	db := &pluck.DB{
 		Functions: []*pluck.Function{
 			{Name: "foo", Definition: "fooDef", DocString: "fooDoc"},
+			{Name: "noDocs", Definition: "noDocsDef", DocString: ""},
 		},
 	}
 
-	t.Run("happy path", func(t *testing.T) {
+	t.Run("happy path - with docstring", func(t *testing.T) {
 		// given
 		buf := &bytes.Buffer{}
 		f := pluck.RenderFunction("foo")
@@ -42,7 +43,20 @@ func TestRenderFunction(t *testing.T) {
 		require.NoError(t, err)
 
 		// then
-		assert.Equal(t, "fooDoc\nfooDef\n", buf.String())
+		assert.Equal(t, "fooDoc\nfooDef", buf.String())
+	})
+
+	t.Run("happy path - no docstring", func(t *testing.T) {
+		// given
+		buf := &bytes.Buffer{}
+		f := pluck.RenderFunction("noDocs")
+
+		// when
+		err := f(buf, db)
+		require.NoError(t, err)
+
+		// then
+		assert.Equal(t, "noDocsDef", buf.String())
 	})
 
 	t.Run("not in db", func(t *testing.T) {
@@ -62,10 +76,11 @@ func TestRenderType(t *testing.T) {
 	db := &pluck.DB{
 		Types: []*pluck.Type{
 			{Name: "foo", Definition: "fooDef", DocString: "fooDoc"},
+			{Name: "noDocs", Definition: "noDocsDef", DocString: ""},
 		},
 	}
 
-	t.Run("happy path", func(t *testing.T) {
+	t.Run("happy path - with docstring", func(t *testing.T) {
 		// given
 		buf := &bytes.Buffer{}
 		f := pluck.RenderType("foo")
@@ -75,7 +90,20 @@ func TestRenderType(t *testing.T) {
 		require.NoError(t, err)
 
 		// then
-		assert.Equal(t, "fooDoc\nfooDef\n", buf.String())
+		assert.Equal(t, "fooDoc\nfooDef", buf.String())
+	})
+
+	t.Run("happy path - no docstring", func(t *testing.T) {
+		// given
+		buf := &bytes.Buffer{}
+		f := pluck.RenderType("noDocs")
+
+		// when
+		err := f(buf, db)
+		require.NoError(t, err)
+
+		// then
+		assert.Equal(t, "noDocsDef", buf.String())
 	})
 
 	t.Run("not in db", func(t *testing.T) {

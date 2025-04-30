@@ -3,9 +3,14 @@ package pluck
 import (
 	"fmt"
 	"io"
+	"strings"
 )
 
 type RenderFunc func(io.Writer, *DB) error
+
+func isEmpty(s string) bool {
+	return strings.TrimSpace(s) == ""
+}
 
 func write(w io.Writer, hunks ...string) error {
 	for _, hunk := range hunks {
@@ -30,7 +35,11 @@ func RenderFunction(name string) RenderFunc {
 			return fmt.Errorf("querying db for function '%s': %w", name, err)
 		}
 
-		err = write(w, f.DocString, "\n", f.Definition)
+		docString := ""
+		if !isEmpty(f.DocString) {
+			docString = f.DocString + "\n"
+		}
+		err = write(w, docString, f.Definition)
 		if err != nil {
 			return fmt.Errorf("writing function '%s': %w", name, err)
 		}
@@ -46,7 +55,11 @@ func RenderType(name string) RenderFunc {
 			return fmt.Errorf("querying db for type '%s': %w", name, err)
 		}
 
-		err = write(w, t.DocString, "\n", t.Definition)
+		docString := ""
+		if !isEmpty(t.DocString) {
+			docString = t.DocString + "\n"
+		}
+		err = write(w, docString, t.Definition)
 		if err != nil {
 			return fmt.Errorf("writing type '%s': %w", name, err)
 		}

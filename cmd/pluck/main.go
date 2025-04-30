@@ -64,10 +64,14 @@ func runPluck(inputFile string, picks []string, outputFile string) error {
 
 	// Parse picks
 	var renderFuncs []pluck.RenderFunc
-	for _, p := range picks {
+	for i, p := range picks {
 		f, err := parsePick(p)
 		if err != nil {
 			return fmt.Errorf("parsing picks: %w", err)
+		}
+
+		if i != 0 {
+			renderFuncs = append(renderFuncs, pluck.RenderLineBreak())
 		}
 		renderFuncs = append(renderFuncs, f, pluck.RenderLineBreak())
 	}
