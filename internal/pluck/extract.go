@@ -27,10 +27,27 @@ func findNodeByName(
 	return nil
 }
 
-// collectComments stating from the current node,
-// walk back though siblings collecting all comments
-func collectComments(start *sitter.Node, src []byte) string {
+type treeSupport struct {
+	query  *sitter.Query
+	match  *sitter.QueryMatch
+	src    []byte
+	errors error
+}
+
+func (s *treeSupport) getContent(id string) string {
+	node := findNodeByName(s.query, s.match, id)
+	if node == nil {
+		s.errors = errors.Join(s.errors, fmt.Errorf("could not find %s", id))
+		return ""
+	}
+
+	return node.Content(s.src)
+}
+
+func (s *treeSupport) collectComments(id string) string {
+	start := findNodeByName(s.query, s.match, id)
 	if start == nil {
+		s.errors = errors.Join(s.errors, fmt.Errorf("could not find %s", id))
 		return ""
 	}
 
@@ -40,31 +57,43 @@ func collectComments(start *sitter.Node, src []byte) string {
 			break
 		}
 
-		fnDocStringLines = append([]string{cur.Content(src)}, fnDocStringLines...)
+		fnDocStringLines = append([]string{cur.Content(s.src)}, fnDocStringLines...)
 	}
 
 	return strings.Join(fnDocStringLines, "\n")
 }
 
-type matchInterpreter struct {
-	query  *sitter.Query
-	match  *sitter.QueryMatch
-	src    []byte
-	errors error
-}
-
-func (m *matchInterpreter) getContentAndWitholdError(s string) string {
-	node := findNodeByName(m.query, m.match, s)
-	if node == nil {
-		m.errors = errors.Join(m.errors, fmt.Errorf("could not find %s", s))
+func (s *treeSupport) extractTypeName(id string) string {
+	start := findNodeByName(s.query, s.match, id)
+	if start == nil {
+		s.errors = errors.Join(s.errors, fmt.Errorf("could not find %s", id))
 		return ""
 	}
 
-	return node.Content(m.src)
+	switch {
+	case start == nil:
+		s.errors = errors.Join(errors.New("extracting type received nil node"))
+		return ""
+	case start.Type() == "type_identifier":
+		return start.Content(s.src)
+	case start.Type() != "pointer_type":
+		err := fmt.Errorf("extracting type received unexpected type %s", start.Type())
+		s.errors = errors.Join(s.errors, err)
+		return ""
+	}
+
+	child := start.Child(1)
+	if child == nil {
+		err := fmt.Errorf("extracting type received unexpected missing child")
+		s.errors = errors.Join(s.errors, err)
+		return ""
+	}
+
+	return child.Content(s.src)
 }
 
-func (m *matchInterpreter) ErrorIfAny() error {
-	return m.errors
+func (s *treeSupport) Close() error {
+	return s.errors
 }
 
 func initQuery(src, pattern []byte) (*sitter.QueryCursor, *sitter.Query, error) {
@@ -105,14 +134,13 @@ func extractType(src []byte) ([]*Type, error) {
 			break
 		}
 
-		typeDefNode := findNodeByName(query, match, "typeDefinition")
-		interpreter := matchInterpreter{query: query, match: match, src: src}
+		support := treeSupport{query: query, match: match, src: src}
 		types = append(types, &Type{
-			Name:       interpreter.getContentAndWitholdError("typeName"),
-			Definition: interpreter.getContentAndWitholdError("typeDefinition"),
-			DocString:  collectComments(typeDefNode, src),
+			Name:       support.getContent("typeName"),
+			Definition: support.getContent("typeDefinition"),
+			DocString:  support.collectComments("typeDefinition"),
 		})
-		if err := interpreter.ErrorIfAny(); err != nil {
+		if err := support.Close(); err != nil {
 			return nil, fmt.Errorf("interpreting query: %w", err)
 		}
 
@@ -140,14 +168,13 @@ func extractFunc(src []byte) ([]*Function, error) {
 			break
 		}
 
-		fnDefNode := findNodeByName(query, match, "fnDefinition")
-		interpreter := matchInterpreter{query: query, match: match, src: src}
+		support := treeSupport{query: query, match: match, src: src}
 		f := &Function{
-			Name:       interpreter.getContentAndWitholdError("fnName"),
-			Definition: interpreter.getContentAndWitholdError("fnDefinition"),
-			DocString:  collectComments(fnDefNode, src),
+			Name:       support.getContent("fnName"),
+			Definition: support.getContent("fnDefinition"),
+			DocString:  support.collectComments("fnDefinition"),
 		}
-		if err := interpreter.ErrorIfAny(); err != nil {
+		if err := support.Close(); err != nil {
 			return nil, fmt.Errorf("interpreting query: %w", err)
 		}
 
@@ -160,11 +187,13 @@ func extractFunc(src []byte) ([]*Function, error) {
 func extractMethods(src []byte) ([]*Function, error) {
 	pattern := []byte(`
 		(method_declaration
-			receiver: (_)
+			receiver: (parameter_list
+				(parameter_declaration
+					name: (identifier)
+					type: (_) @receiverType
+				)
+			)
 			name: (field_identifier) @fnName
-			parameters: (_)
-			result: (_)
-			body: (_)
 		) @fnDefinition
 	`)
 
@@ -180,14 +209,15 @@ func extractMethods(src []byte) ([]*Function, error) {
 			break
 		}
 
-		fnDefNode := findNodeByName(query, match, "fnDefinition")
-		interpreter := matchInterpreter{query: query, match: match, src: src}
+		support := treeSupport{query: query, match: match, src: src}
+		fnName := support.getContent("fnName")
+		typeName := support.extractTypeName("receiverType")
 		f := &Function{
-			Name:       interpreter.getContentAndWitholdError("fnName"),
-			Definition: interpreter.getContentAndWitholdError("fnDefinition"),
-			DocString:  collectComments(fnDefNode, src),
+			Name:       typeName + "." + fnName,
+			Definition: support.getContent("fnDefinition"),
+			DocString:  support.collectComments("fnDefinition"),
 		}
-		if err := interpreter.ErrorIfAny(); err != nil {
+		if err := support.Close(); err != nil {
 			return nil, fmt.Errorf("interpreting query: %w", err)
 		}
 
