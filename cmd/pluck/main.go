@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -43,7 +44,13 @@ func runPluck(inputFile string, picks []string, outputFile string) error {
 	if err != nil {
 		return fmt.Errorf("setting up output: %w", err)
 	}
-	defer closeWriter()
+	defer func() {
+		localErr := closeWriter()
+		if localErr != nil {
+			msg := fmt.Sprintf("failed to close output writer: %s", localErr.Error())
+			slog.Warn(msg)
+		}
+	}()
 
 	err = pluck.GenerateFromPickCmds(writer, source, picks)
 	if err != nil {
@@ -78,7 +85,10 @@ Examples:
 	rootCmd.Flags().StringVarP(&outputFile, "output", "o", "", "Write output to file (default: stdout)")
 	rootCmd.Flags().StringArrayVar(&picks, "pick", nil, "Item to extract in format kind:name (e.g., function:Foo)")
 
-	rootCmd.MarkFlagRequired("pick")
+	err := rootCmd.MarkFlagRequired("pick")
+	if err != nil {
+		panic("unexpected error setting pick flag as required")
+	}
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
