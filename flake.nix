@@ -32,6 +32,7 @@
             pkgs.nixfmt-rfc-style # for tools like nix fmt
             pkgs.goreleaser # for releasing
             pkgs.just # for task management
+            pkgs.goreleaser # for release management
           ];
         };
       }
