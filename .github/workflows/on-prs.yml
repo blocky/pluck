@@ -18,3 +18,20 @@ jobs:
       pull-requests: write
     steps:
       - uses: hmarr/auto-approve-action@v3
+
+  pre-merge:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+
+    - name: Install Nix
+      uses: cachix/install-nix-action@v31
+      with:
+        nix_path: nixpkgs=channel:nixos-24.11
+
+    - name: Lint
+      run: nix-shell --pure --run "just lint"
+
+    - name: Test
+      run: nix-shell --pure --run "just test"
