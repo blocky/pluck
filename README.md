@@ -62,7 +62,7 @@ type AType struct {
 }
 ```
 
-We can even grab multiple items for example the two functions:
+We can even grab multiple items. For example, the two functions:
 
 ```bash
 pluck --input go-file.go --pick function:AType.AMethodOfAType --pick function:AFunction
