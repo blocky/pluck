@@ -15,4 +15,3 @@ formatters:
     goimports:
       local-prefixes:
         - "github.com/blocky"
-        - "go.bky.sh"

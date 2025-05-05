@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"go.bky.sh/pluck/internal/pluck"
+	"github.com/blocky/pluck/internal/pluck"
 )
 
 func TestParsePick(t *testing.T) {
