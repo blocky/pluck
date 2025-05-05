@@ -19,6 +19,63 @@ Why is it so hard to put working code into docs? A few common options are:
    line numbers.
 
 Pluck seeks to provide many of the benefits of extracting by line, but extract
-code by "tag".  And since we are talking about code, we can use functions as
-our "tags".  In addition, we provide some functionality for specifying how that
-function is rendered.
+code by "tag".  And since we are talking about code, we can use functions and
+type definitions as our "tags".
+
+## Install
+
+To install the latest version, run:
+
+```bash
+go install github.com/blocky/pluck/cmd/pluck@latest
+```
+
+And give it is try! Let's create a go file:
+
+```bash
+cat  <<EOF > go-file.go
+package myPackge
+
+type AType struct {
+    FieldOfAType int
+}
+
+func (f *AType) AMethodOfAType() error {
+    return nil
+}
+
+func AFunction() {}
+EOF
+```
+
+And let's extract the type from the file:
+
+```bash
+pluck --input go-file.go --pick type:AType
+```
+
+While will produce the following code snippet:
+
+```
+type AType struct {
+    FieldOfAType int
+}
+```
+
+We can even grab multiple items for example the two functions:
+
+```bash
+pluck --input go-file.go --pick function:AType.AMethodOfAType --pick function:AFunction
+```
+
+Which produces the code snippet:
+
+```
+func (f *AType) AMethodOfAType() error {
+    return nil
+}
+
+func AFunction() {}
+```
+
+And that is about it... Enjoy!
