@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: hmarr/auto-approve-action@v3
 
-  TBD:
+  pre-merge:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repo
