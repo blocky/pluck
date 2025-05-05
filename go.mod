@@ -1,4 +1,4 @@
-module go.bky.sh/pluck
+module github.com/blocky/pluck
 
 go 1.24.2
 
