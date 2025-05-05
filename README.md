@@ -54,7 +54,7 @@ And let's extract the type from the file:
 pluck --input go-file.go --pick type:AType
 ```
 
-While will produce the following code snippet:
+It will produce the following code snippet:
 
 ```
 type AType struct {
