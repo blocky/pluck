@@ -1,0 +1,29 @@
+{
+  "name": "blocky-pluck-test1",
+  "version": "0.1.1",
+  "description": "Why is it so hard to put working code into docs?",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "go-npm install",
+    "preuninstall": "go-npm uninstall"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blocky/pluck.git"
+  },
+  "author": "Blocky",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/blocky/pluck/issues"
+  },
+  "homepage": "https://github.com/blocky/pluck#readme",
+  "dependencies": {
+    "go-npm": "^0.1.9"
+  },
+  "goBinary": {
+    "name": "pluck",
+    "path": "./bin",
+    "url": "https://github.com/blocky/pluck/releases/download/v{{version}}/pluck_Linux_x86_64.tar.gz"
+  }
+}
