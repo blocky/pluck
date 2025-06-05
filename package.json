@@ -1,6 +1,6 @@
 {
   "name": "blocky-pluck-test2",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Why is it so hard to put working code into docs?",
   "main": "index.js",
   "scripts": {
