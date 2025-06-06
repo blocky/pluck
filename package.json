@@ -1,5 +1,5 @@
 {
-  "name": "blocky-pluck-test2",
+  "name": "blocky-pluck-test5",
   "version": "0.1.2",
   "description": "Why is it so hard to put working code into docs?",
   "main": "index.js",
@@ -25,5 +25,8 @@
     "name": "pluck",
     "path": "./bin",
     "url": "https://github.com/blocky/pluck/releases/download/v{{version}}/pluck_Linux_x86_64.tar.gz"
+  },
+  "bin": {
+    "pluck": ".bin/pluck"
   }
 }
