@@ -1,4 +1,4 @@
-package pluck
+package internal
 
 type Error string
 
