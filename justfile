@@ -17,5 +17,5 @@ lint: lint-nix-files
 pre-pr: lint test
 
 test:
-	go test ./...
+	go test -count=1 ./...
 
