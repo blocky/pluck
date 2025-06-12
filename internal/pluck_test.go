@@ -1,4 +1,4 @@
-package pluck_test
+package internal_test
 
 import (
 	"bytes"
@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/blocky/pluck/internal/pluck"
+	"github.com/blocky/pluck/internal"
 )
 
 var update = flag.Bool("update", false, "update golden files")
@@ -41,7 +41,10 @@ func TestGenerateFromPickCmds(t *testing.T) {
 		{id: "004", cmds: []string{"function:TypeWithMethods.AMethod"}},
 		{id: "005", cmds: []string{"function:Func"}},
 		{id: "006", cmds: []string{"function:FuncWithDocstring"}},
-		{id: "007", cmds: []string{"type:TypeWithMethods", "function:TypeWithMethods.AMethod"}},
+		{
+			id:   "007",
+			cmds: []string{"type:TypeWithMethods", "function:TypeWithMethods.AMethod"},
+		},
 		{id: "008", cmds: []string{"type:Type", "function:main"}},
 		{id: "009", cmds: []string{"function:main", "type:typeUnexported"}},
 		{
@@ -59,7 +62,7 @@ func TestGenerateFromPickCmds(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.id, func(t *testing.T) {
 			var got bytes.Buffer
-			err = pluck.GenerateFromPickCmds(&got, source, tc.cmds)
+			err = internal.GenerateFromPickCmds(&got, source, tc.cmds)
 			require.NoError(t, err)
 
 			f := fmt.Sprintf("go-%s", tc.id)

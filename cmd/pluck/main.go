@@ -8,7 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/blocky/pluck/internal/pluck"
+	"github.com/blocky/pluck"
 )
 
 func getSrc(inputFile string) ([]byte, error) {

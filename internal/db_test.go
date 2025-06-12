@@ -1,4 +1,4 @@
-package pluck_test
+package internal_test
 
 import (
 	"testing"
@@ -6,17 +6,17 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/blocky/pluck/internal/pluck"
+	"github.com/blocky/pluck/internal"
 )
 
 func TestDB_FindFunctionByName(t *testing.T) {
-	func0 := &pluck.Function{Name: "func0"}
-	func1 := &pluck.Function{Name: "func1"}
+	func0 := &internal.Function{Name: "func0"}
+	func1 := &internal.Function{Name: "func1"}
 
 	t.Run("happy path", func(t *testing.T) {
 		// given
-		db := &pluck.DB{
-			Functions: []*pluck.Function{func0, func1},
+		db := &internal.DB{
+			Functions: []*internal.Function{func0, func1},
 		}
 
 		// when
@@ -29,26 +29,26 @@ func TestDB_FindFunctionByName(t *testing.T) {
 
 	t.Run("function not found", func(t *testing.T) {
 		// given
-		db := &pluck.DB{
-			Functions: []*pluck.Function{func0, func1},
+		db := &internal.DB{
+			Functions: []*internal.Function{func0, func1},
 		}
 
 		// when
 		_, err := db.FindFunctionByName("notAfunc")
 
 		// then
-		assert.ErrorIs(t, err, pluck.ErrNotFound)
+		assert.ErrorIs(t, err, internal.ErrNotFound)
 	})
 }
 
 func TestDB_FindTypeByName(t *testing.T) {
-	type0 := &pluck.Type{Name: "type0"}
-	type1 := &pluck.Type{Name: "type1"}
+	type0 := &internal.Type{Name: "type0"}
+	type1 := &internal.Type{Name: "type1"}
 
 	t.Run("happy path", func(t *testing.T) {
 		// given
-		db := &pluck.DB{
-			Types: []*pluck.Type{type0, type1},
+		db := &internal.DB{
+			Types: []*internal.Type{type0, type1},
 		}
 
 		// when
@@ -61,14 +61,14 @@ func TestDB_FindTypeByName(t *testing.T) {
 
 	t.Run("type not found", func(t *testing.T) {
 		// given
-		db := &pluck.DB{
-			Types: []*pluck.Type{type0, type1},
+		db := &internal.DB{
+			Types: []*internal.Type{type0, type1},
 		}
 
 		// when
 		_, err := db.FindTypeByName("notAfunc")
 
 		// then
-		assert.ErrorIs(t, err, pluck.ErrNotFound)
+		assert.ErrorIs(t, err, internal.ErrNotFound)
 	})
 }

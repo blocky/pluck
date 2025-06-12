@@ -1,4 +1,4 @@
-package pluck
+package internal
 
 import (
 	"context"
