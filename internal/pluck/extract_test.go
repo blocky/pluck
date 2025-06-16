@@ -1,4 +1,4 @@
-package internal_test
+package pluck_test
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/blocky/pluck/internal"
+	"github.com/blocky/pluck/internal/pluck"
 )
 
 const goSrc = `
@@ -57,7 +57,7 @@ func TestExtract(t *testing.T) {
 		input := []byte(goSrc)
 
 		// when
-		got, err := internal.Extract(input)
+		got, err := pluck.Extract(input)
 		require.NoError(t, err)
 
 		// then
@@ -79,7 +79,7 @@ func TestExtract(t *testing.T) {
 		input := []byte("this is not go code")
 
 		// when
-		got, err := internal.Extract(input)
+		got, err := pluck.Extract(input)
 		require.NoError(t, err)
 
 		// then
@@ -101,7 +101,7 @@ func TestExtract(t *testing.T) {
 			input := []byte(tc.src)
 
 			// when
-			got, err := internal.Extract(input)
+			got, err := pluck.Extract(input)
 			require.NoError(t, err)
 
 			// then

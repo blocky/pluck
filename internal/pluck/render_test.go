@@ -1,4 +1,4 @@
-package internal_test
+package pluck_test
 
 import (
 	"bytes"
@@ -7,14 +7,14 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/blocky/pluck/internal"
+	"github.com/blocky/pluck/internal/pluck"
 )
 
 func TestRenderLineBreak(t *testing.T) {
 	t.Run("happy path", func(t *testing.T) {
 		// given
 		buf := &bytes.Buffer{}
-		f := internal.RenderLineBreak()
+		f := pluck.RenderLineBreak()
 
 		// when
 		err := f(buf, nil)
@@ -26,8 +26,8 @@ func TestRenderLineBreak(t *testing.T) {
 }
 
 func TestRenderFunction(t *testing.T) {
-	db := &internal.DB{
-		Functions: []*internal.Function{
+	db := &pluck.DB{
+		Functions: []*pluck.Function{
 			{Name: "foo", Definition: "fooDef", DocString: "fooDoc"},
 			{Name: "noDocs", Definition: "noDocsDef", DocString: ""},
 		},
@@ -36,7 +36,7 @@ func TestRenderFunction(t *testing.T) {
 	t.Run("happy path - with docstring", func(t *testing.T) {
 		// given
 		buf := &bytes.Buffer{}
-		f := internal.RenderFunction("foo")
+		f := pluck.RenderFunction("foo")
 
 		// when
 		err := f(buf, db)
@@ -49,7 +49,7 @@ func TestRenderFunction(t *testing.T) {
 	t.Run("happy path - no docstring", func(t *testing.T) {
 		// given
 		buf := &bytes.Buffer{}
-		f := internal.RenderFunction("noDocs")
+		f := pluck.RenderFunction("noDocs")
 
 		// when
 		err := f(buf, db)
@@ -62,19 +62,19 @@ func TestRenderFunction(t *testing.T) {
 	t.Run("not in db", func(t *testing.T) {
 		// given
 		buf := &bytes.Buffer{}
-		f := internal.RenderFunction("bar")
+		f := pluck.RenderFunction("bar")
 
 		// when
 		err := f(buf, db)
 
 		// then
-		assert.ErrorIs(t, err, internal.ErrNotFound)
+		assert.ErrorIs(t, err, pluck.ErrNotFound)
 	})
 }
 
 func TestRenderType(t *testing.T) {
-	db := &internal.DB{
-		Types: []*internal.Type{
+	db := &pluck.DB{
+		Types: []*pluck.Type{
 			{Name: "foo", Definition: "fooDef", DocString: "fooDoc"},
 			{Name: "noDocs", Definition: "noDocsDef", DocString: ""},
 		},
@@ -83,7 +83,7 @@ func TestRenderType(t *testing.T) {
 	t.Run("happy path - with docstring", func(t *testing.T) {
 		// given
 		buf := &bytes.Buffer{}
-		f := internal.RenderType("foo")
+		f := pluck.RenderType("foo")
 
 		// when
 		err := f(buf, db)
@@ -96,7 +96,7 @@ func TestRenderType(t *testing.T) {
 	t.Run("happy path - no docstring", func(t *testing.T) {
 		// given
 		buf := &bytes.Buffer{}
-		f := internal.RenderType("noDocs")
+		f := pluck.RenderType("noDocs")
 
 		// when
 		err := f(buf, db)
@@ -109,12 +109,12 @@ func TestRenderType(t *testing.T) {
 	t.Run("not in db", func(t *testing.T) {
 		// given
 		buf := &bytes.Buffer{}
-		f := internal.RenderFunction("bar")
+		f := pluck.RenderFunction("bar")
 
 		// when
 		err := f(buf, db)
 
 		// then
-		assert.ErrorIs(t, err, internal.ErrNotFound)
+		assert.ErrorIs(t, err, pluck.ErrNotFound)
 	})
 }

@@ -3,9 +3,9 @@ package pluck
 import (
 	"io"
 
-	"github.com/blocky/pluck/internal"
+	pluckInternal "github.com/blocky/pluck/internal/pluck"
 )
 
 func GenerateFromPickCmds(w io.Writer, source []byte, picks []string) error {
-	return internal.GenerateFromPickCmds(w, source, picks)
+	return pluckInternal.GenerateFromPickCmds(w, source, picks)
 }
